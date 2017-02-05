@@ -1,0 +1,29 @@
+---
+- hosts: docker-host
+  tasks:
+
+  - name: add GPG Key for the official Docker Repo
+    apt_key:
+      keyserver: p80.pool.sks-keyservers.net
+      id: 58118E89F3A912897C070ADBF76221572C52609D
+    become: true
+
+  - name: add repo for Ubuntu 16.04
+    apt_repository:
+      repo: deb https://apt.dockerproject.org/repo ubuntu-xenial main
+      state: present
+    become: true
+    when: ansible_distribution_version == "16.04"
+
+  - name: Install Docker
+    apt:
+      name: docker-engine
+      update_cache: yes
+    become: true
+      
+  - name: Add user ubuntu to docker group
+    user:
+      name: ubuntu
+      groups: docker
+    become: true
+
